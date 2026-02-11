@@ -226,9 +226,84 @@
       font-weight: 600;
       box-shadow: 0 8px 25px rgba(214, 51, 132, 0.4);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
     }
 
     .kiss-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(214, 51, 132, 0.6);
+    }
+
+    /* ── Sorpresa View ── */
+    .sorpresa-view {
+      position: relative;
+      z-index: 10;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .sorpresa-view.visible {
+      display: flex;
+    }
+
+    .card {
+      position: relative;
+      z-index: 10;
+      max-width: 600px;
+      width: 100%;
+      background: linear-gradient(145deg, rgba(255,245,238,0.95), rgba(255,228,225,0.95));
+      border-radius: 16px;
+      padding: 50px 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      transform: rotate(-1deg);
+      text-align: center;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      border: 2px solid rgba(255, 107, 157, 0.2);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #d63384;
+      margin-bottom: 24px;
+    }
+
+    .card img {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #ff6b9d, #d63384);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(214, 51, 132, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
       transform: scale(1.05);
       box-shadow: 0 12px 35px rgba(214, 51, 132, 0.6);
     }
@@ -317,6 +392,8 @@
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .letter { padding: 35px 25px; font-size: 1.1rem; }
+      .card { padding: 35px 25px; }
+      .card h2 { font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -353,9 +430,19 @@
         (amorcito que sepas que tu vas a ser my valentine toda tu vidaaaaaaa)<br><br>
         Gracias por ser como eres, gracias por todo el amor que me das, gracias por ser el amor de mi vida, te amo mi ni&ntilde;a, gracias por ser tu jj<br><br>
         <div class="signature">Tu amor precioso te ama mucho Muaaaack &#9829;</div>
-        <a href="sorpresa.html" class="kiss-btn" id="kissBtn">&#128139; Toca aqu&iacute; para otra sorpresita &#128139;</a>
+        <span class="kiss-btn" id="kissBtn">&#128139; Toca aqu&iacute; para otra sorpresita &#128139;</span>
       </div>
     </section>
+  </div>
+
+  <!-- Sorpresa View -->
+  <div class="sorpresa-view" id="sorpresaView">
+    <div class="card">
+      <h2>&#128139; Tu sorpresita &#128139;</h2>
+      <img src="besoparamiamor.jpg" alt="Un besito para ti">
+      <br>
+      <span class="back-btn" id="backBtn">&#9829; Volver a la carta &#9829;</span>
+    </div>
   </div>
 
   <!-- Music Controls -->
@@ -392,6 +479,21 @@
       }, 600);
     });
 
+    // ── View Switching (no page reload, music keeps playing) ──
+    document.getElementById('kissBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('sorpresaView').classList.add('visible');
+      window.scrollTo(0, 0);
+    });
+
+    document.getElementById('backBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('sorpresaView').classList.remove('visible');
+      document.getElementById('mainContent').style.display = '';
+      window.scrollTo(0, 0);
+    });
+
     // ── Sparkle on Click ──
     document.addEventListener('click', (e) => {
       const sparkles = ['\u2728', '\uD83D\uDC96', '\u2764', '\u2B50', '\uD83D\uDC9D'];
@@ -406,7 +508,7 @@
       }
     });
 
-    // ── Music with localStorage persistence ──
+    // ── Music ──
     const audio = new Audio('amilado.mp3');
     audio.loop = true;
     let playing = false;
@@ -415,16 +517,6 @@
     const volume = savedVolume !== null ? parseInt(savedVolume) : 100;
     audio.volume = volume / 100;
     document.getElementById('volumeSlider').value = volume;
-
-    // Restore music state from previous page
-    if (localStorage.getItem('musicPlaying') === 'true') {
-      const savedTime = parseFloat(localStorage.getItem('musicTime') || '0');
-      audio.currentTime = savedTime;
-      audio.play().then(() => {
-        playing = true;
-        document.getElementById('musicBtn').textContent = '\uD83D\uDD0A';
-      }).catch(() => {});
-    }
 
     document.getElementById('musicBtn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -436,7 +528,6 @@
         audio.pause();
         document.getElementById('musicBtn').textContent = '\uD83C\uDFB5';
       }
-      localStorage.setItem('musicPlaying', playing);
     });
 
     // Volume slider
@@ -444,13 +535,6 @@
       const vol = parseInt(e.target.value);
       audio.volume = vol / 100;
       localStorage.setItem('musicVolume', vol);
-    });
-
-    // Save state before navigating away
-    document.getElementById('kissBtn').addEventListener('click', () => {
-      localStorage.setItem('musicPlaying', playing);
-      localStorage.setItem('musicTime', audio.currentTime);
-      localStorage.setItem('musicVolume', document.getElementById('volumeSlider').value);
     });
   </script>
 </body>
