@@ -118,11 +118,53 @@
       100% { transform: scale(0) rotate(360deg) translateY(-40px); opacity: 0; }
     }
 
-    /* ── Music Toggle ── */
-    .music-btn {
+    /* ── Music Controls ── */
+    .music-controls {
       position: fixed;
       bottom: 24px;
       right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 200;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 90px;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 107, 157, 0.25);
+      outline: none;
+      opacity: 0.85;
+      transition: opacity 0.3s;
+    }
+
+    .volume-slider:hover { opacity: 1; }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b9d, #d63384);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(214, 51, 132, 0.5);
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b9d, #d63384);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(214, 51, 132, 0.5);
+    }
+
+    .music-btn {
       width: 50px;
       height: 50px;
       border-radius: 50%;
@@ -134,7 +176,6 @@
       align-items: center;
       justify-content: center;
       font-size: 1.4rem;
-      z-index: 200;
       transition: transform 0.3s, background 0.3s;
     }
 
@@ -160,8 +201,11 @@
     <a href="index.html" class="back-btn">&#9829; Volver a la carta &#9829;</a>
   </div>
 
-  <!-- Music Toggle -->
-  <button class="music-btn" id="musicBtn" title="Activar M&uacute;sica">&#127925;</button>
+  <!-- Music Controls -->
+  <div class="music-controls">
+    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" title="Volumen">
+    <button class="music-btn" id="musicBtn" title="Activar M&uacute;sica">&#127925;</button>
+  </div>
 
   <script>
     // ── Floating Hearts ──
@@ -183,10 +227,25 @@
     setInterval(createFloatingHeart, 600);
     for (let i = 0; i < 15; i++) setTimeout(createFloatingHeart, i * 200);
 
-    // ── Music ──
+    // ── Music with localStorage persistence ──
     const audio = new Audio('amilado.mp3');
     audio.loop = true;
     let playing = false;
+
+    const savedVolume = localStorage.getItem('musicVolume');
+    const volume = savedVolume !== null ? parseInt(savedVolume) : 100;
+    audio.volume = volume / 100;
+    document.getElementById('volumeSlider').value = volume;
+
+    // Restore music state from previous page
+    if (localStorage.getItem('musicPlaying') === 'true') {
+      const savedTime = parseFloat(localStorage.getItem('musicTime') || '0');
+      audio.currentTime = savedTime;
+      audio.play().then(() => {
+        playing = true;
+        document.getElementById('musicBtn').textContent = '\uD83D\uDD0A';
+      }).catch(() => {});
+    }
 
     document.getElementById('musicBtn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -198,6 +257,21 @@
         audio.pause();
         document.getElementById('musicBtn').textContent = '\uD83C\uDFB5';
       }
+      localStorage.setItem('musicPlaying', playing);
+    });
+
+    // Volume slider
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+      const vol = parseInt(e.target.value);
+      audio.volume = vol / 100;
+      localStorage.setItem('musicVolume', vol);
+    });
+
+    // Save state before navigating away
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      localStorage.setItem('musicPlaying', playing);
+      localStorage.setItem('musicTime', audio.currentTime);
+      localStorage.setItem('musicVolume', document.getElementById('volumeSlider').value);
     });
 
     // ── Sparkle on Click ──
