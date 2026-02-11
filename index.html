@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para Ti, Con Amor</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Quicksand:wght@300;400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a0a14, #2d0a1e, #1a0a2e);
+      font-family: 'Quicksand', sans-serif;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* ── Floating Hearts Background ── */
+    .hearts-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -80px;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      filter: blur(1px);
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-110vh) rotate(360deg) scale(0.5); opacity: 0; }
+    }
+
+    /* ── Envelope / Landing Screen ── */
+    .landing {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      background: linear-gradient(135deg, #1a0a14, #2d0a1e, #1a0a2e);
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+
+    .landing.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .envelope-wrapper:hover { transform: scale(1.05); }
+
+    .envelope {
+      width: 220px;
+      height: 150px;
+      position: relative;
+    }
+
+    .envelope-body {
+      width: 220px;
+      height: 150px;
+      background: linear-gradient(145deg, #e84393, #fd79a8);
+      border-radius: 0 0 12px 12px;
+      position: relative;
+      box-shadow: 0 15px 50px rgba(232, 67, 147, 0.4);
+    }
+
+    .envelope-flap {
+      width: 0;
+      height: 0;
+      border-left: 110px solid transparent;
+      border-right: 110px solid transparent;
+      border-top: 90px solid #d63384;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top;
+      transition: transform 0.6s ease;
+      z-index: 2;
+    }
+
+    .envelope-wrapper:hover .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    .envelope-flap-under {
+      width: 0;
+      height: 0;
+      border-left: 110px solid transparent;
+      border-right: 110px solid transparent;
+      border-bottom: 90px solid #c2185b;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .heart-seal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      z-index: 3;
+      animation: pulse 1.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(255, 100, 150, 0.8));
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50%      { transform: translate(-50%, -50%) scale(1.2); }
+    }
+
+    .landing-text {
+      margin-top: 40px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: #fd79a8;
+      animation: fadeInUp 1s ease 0.5s both;
+      text-shadow: 0 0 20px rgba(253, 121, 168, 0.5);
+    }
+
+    .landing-subtext {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: rgba(255, 150, 180, 0.7);
+      animation: fadeInUp 1s ease 1s both;
+      letter-spacing: 2px;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Letter Content ── */
+    .main-content {
+      position: relative;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .main-content.visible { opacity: 1; }
+
+    .love-letter-section {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .love-letter-section h2 {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      color: #ff6b9d;
+      margin-bottom: 30px;
+    }
+
+    .letter {
+      background: linear-gradient(145deg, rgba(255,245,238,0.95), rgba(255,228,225,0.95));
+      border-radius: 16px;
+      padding: 50px 40px;
+      color: #4a2030;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      line-height: 2;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      transform: rotate(-1deg);
+    }
+
+    .letter::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      border: 2px solid rgba(255, 107, 157, 0.2);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .letter .signature {
+      text-align: right;
+      margin-top: 24px;
+      font-size: 1.5rem;
+      color: #d63384;
+    }
+
+    /* ── Kiss Button ── */
+    .kiss-btn {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #ff6b9d, #d63384);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(214, 51, 132, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .kiss-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(214, 51, 132, 0.6);
+    }
+
+    /* ── Sparkle Click Effect ── */
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      font-size: 1.2rem;
+      animation: sparkleAnim 0.8s ease forwards;
+    }
+
+    @keyframes sparkleAnim {
+      0%   { transform: scale(0) rotate(0deg); opacity: 1; }
+      50%  { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+      100% { transform: scale(0) rotate(360deg) translateY(-40px); opacity: 0; }
+    }
+
+    /* ── Music Toggle ── */
+    .music-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 107, 157, 0.2);
+      border: 1px solid rgba(255, 107, 157, 0.3);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      z-index: 200;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 107, 157, 0.35);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .letter { padding: 35px 25px; font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Hearts Background -->
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <!-- Landing / Envelope -->
+  <div class="landing" id="landing">
+    <div class="envelope-wrapper" id="envelopeBtn">
+      <div class="envelope">
+        <div class="envelope-flap"></div>
+        <div class="envelope-flap-under"></div>
+        <div class="envelope-body">
+          <span class="heart-seal">&#9829;</span>
+        </div>
+      </div>
+    </div>
+    <p class="landing-text">Te tengo un regalito mi amor preciosa</p>
+    <p class="landing-subtext">toca el sobre para verlo jj</p>
+  </div>
+
+  <!-- Love Letter -->
+  <div class="main-content" id="mainContent">
+    <section class="love-letter-section">
+      <h2>Una Carta Para Ti</h2>
+      <div class="letter">
+        Hola mi amor, &iquest;c&oacute;mo est&aacute;s? Esto es una carta un poco diferente ya que no tengo forma de darte una en persona, pero esta divertido jiji. Quer&iacute;a decirte que te amo mucho y que te extra&ntilde;o demasiado.<br><br>
+        Amooooor que gracioso, ya va a ser el quinto San Valent&iacute;n omg, no te parece incre&iacute;ble? Porque a mi si, saber que nos conocimos ese 14 de febrero de 2022 por una basurita de popi jiji (y me dejaste mega enamorado por cierto). Eres increible, enserio, mi mujer preciosa me encantas demasiado AAAAAA TE AMO. Tu tambien me amas verdad? Verdaaaaad? VERDAD?<br><br>
+        Dios te amo mucho mi princesa necia preciosa, te amo casemonos por favor<br><br>
+        Pero si, talvez no sea lo mismo que una carta escrita pero espero que te haga feliz desde la distancia y que pienses en mi<br><br>
+        Por cierto, mi amor, do you want to be my valentine jj?<br>
+        (amorcito que sepas que tu vas a ser my valentine toda tu vidaaaaaaa)<br><br>
+        Gracias por ser como eres, gracias por todo el amor que me das, gracias por ser el amor de mi vida, te amo mi ni&ntilde;a, gracias por ser tu jj<br><br>
+        <div class="signature">Tu amor precioso te ama mucho Muaaaack &#9829;</div>
+        <a href="sorpresa.html" class="kiss-btn" id="kissBtn">&#128139; Toca aqu&iacute; para otra sorpresita &#128139;</a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Music Toggle -->
+  <button class="music-btn" id="musicBtn" title="Activar M&uacute;sica">&#127925;</button>
+
+  <script>
+    // ── Floating Hearts ──
+    const heartsBg = document.getElementById('heartsBg');
+    const heartSymbols = ['\u2764', '\u2665', '\uD83D\uDC95', '\uD83D\uDC96', '\uD83D\uDC97', '\uD83D\uDC9E'];
+
+    function createFloatingHeart() {
+      const heart = document.createElement('span');
+      heart.className = 'floating-heart';
+      heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
+      heart.style.animationDuration = (Math.random() * 8 + 8) + 's';
+      heart.style.animationDelay = (Math.random() * 2) + 's';
+      heartsBg.appendChild(heart);
+      setTimeout(() => heart.remove(), 18000);
+    }
+
+    setInterval(createFloatingHeart, 600);
+    for (let i = 0; i < 15; i++) setTimeout(createFloatingHeart, i * 200);
+
+    // ── Envelope Click ──
+    document.getElementById('envelopeBtn').addEventListener('click', () => {
+      document.getElementById('landing').classList.add('hidden');
+      setTimeout(() => {
+        document.getElementById('mainContent').classList.add('visible');
+      }, 600);
+    });
+
+    // ── Sparkle on Click ──
+    document.addEventListener('click', (e) => {
+      const sparkles = ['\u2728', '\uD83D\uDC96', '\u2764', '\u2B50', '\uD83D\uDC9D'];
+      for (let i = 0; i < 3; i++) {
+        const sparkle = document.createElement('span');
+        sparkle.className = 'sparkle';
+        sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+        sparkle.style.left = (e.clientX + (Math.random() - 0.5) * 40) + 'px';
+        sparkle.style.top = (e.clientY + (Math.random() - 0.5) * 40) + 'px';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 800);
+      }
+    });
+
+    // ── Music ──
+    let audioCtx = null;
+    let playing = false;
+
+    function playRomanticTone() {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+      const durations = [0.8, 0.8, 0.8, 1.2, 0.8, 0.8];
+      let time = audioCtx.currentTime;
+
+      function playSequence() {
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0, time);
+          gain.gain.linearRampToValueAtTime(0.08, time + 0.1);
+          gain.gain.linearRampToValueAtTime(0, time + durations[i] - 0.1);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(time);
+          osc.stop(time + durations[i]);
+          time += durations[i];
+        });
+
+        const totalDuration = durations.reduce((a, b) => a + b, 0) * 1000;
+        if (playing) {
+          setTimeout(() => {
+            if (playing) {
+              time = audioCtx.currentTime;
+              playSequence();
+            }
+          }, totalDuration);
+        }
+      }
+
+      playSequence();
+    }
+
+    document.getElementById('musicBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      playing = !playing;
+      if (playing) {
+        playRomanticTone();
+        document.getElementById('musicBtn').textContent = '\uD83D\uDD0A';
+      } else {
+        if (audioCtx) audioCtx.close();
+        audioCtx = null;
+        document.getElementById('musicBtn').textContent = '\uD83C\uDFB5';
+      }
+    });
+  </script>
+</body>
+</html>

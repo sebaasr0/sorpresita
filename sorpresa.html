@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorpresita</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Quicksand:wght@300;400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a0a14, #2d0a1e, #1a0a2e);
+      font-family: 'Quicksand', sans-serif;
+      overflow-x: hidden;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* ── Floating Hearts Background ── */
+    .hearts-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -80px;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      filter: blur(1px);
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-110vh) rotate(360deg) scale(0.5); opacity: 0; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 10;
+      max-width: 600px;
+      width: 100%;
+      background: linear-gradient(145deg, rgba(255,245,238,0.95), rgba(255,228,225,0.95));
+      border-radius: 16px;
+      padding: 50px 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      transform: rotate(-1deg);
+      text-align: center;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      border: 2px solid rgba(255, 107, 157, 0.2);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #d63384;
+      margin-bottom: 24px;
+    }
+
+    .card img {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #ff6b9d, #d63384);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(214, 51, 132, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .back-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(214, 51, 132, 0.6);
+    }
+
+    /* ── Sparkle Click Effect ── */
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      font-size: 1.2rem;
+      animation: sparkleAnim 0.8s ease forwards;
+    }
+
+    @keyframes sparkleAnim {
+      0%   { transform: scale(0) rotate(0deg); opacity: 1; }
+      50%  { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+      100% { transform: scale(0) rotate(360deg) translateY(-40px); opacity: 0; }
+    }
+
+    @media (max-width: 600px) {
+      .card { padding: 35px 25px; }
+      .card h2 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <div class="card">
+    <h2>&#128139; Tu sorpresita &#128139;</h2>
+    <img src="besoparamiamor.jpg" alt="Un besito para ti">
+    <br>
+    <a href="index.html" class="back-btn">&#9829; Volver a la carta &#9829;</a>
+  </div>
+
+  <script>
+    // ── Floating Hearts ──
+    const heartsBg = document.getElementById('heartsBg');
+    const heartSymbols = ['\u2764', '\u2665', '\uD83D\uDC95', '\uD83D\uDC96', '\uD83D\uDC97', '\uD83D\uDC9E'];
+
+    function createFloatingHeart() {
+      const heart = document.createElement('span');
+      heart.className = 'floating-heart';
+      heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
+      heart.style.animationDuration = (Math.random() * 8 + 8) + 's';
+      heart.style.animationDelay = (Math.random() * 2) + 's';
+      heartsBg.appendChild(heart);
+      setTimeout(() => heart.remove(), 18000);
+    }
+
+    setInterval(createFloatingHeart, 600);
+    for (let i = 0; i < 15; i++) setTimeout(createFloatingHeart, i * 200);
+
+    // ── Sparkle on Click ──
+    document.addEventListener('click', (e) => {
+      const sparkles = ['\u2728', '\uD83D\uDC96', '\u2764', '\u2B50', '\uD83D\uDC9D'];
+      for (let i = 0; i < 3; i++) {
+        const sparkle = document.createElement('span');
+        sparkle.className = 'sparkle';
+        sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+        sparkle.style.left = (e.clientX + (Math.random() - 0.5) * 40) + 'px';
+        sparkle.style.top = (e.clientY + (Math.random() - 0.5) * 40) + 'px';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 800);
+      }
+    });
+  </script>
+</body>
+</html>
