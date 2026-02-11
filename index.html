@@ -363,54 +363,18 @@
     });
 
     // ── Music ──
-    let audioCtx = null;
+    const audio = new Audio('amilado.mp3');
+    audio.loop = true;
     let playing = false;
-
-    function playRomanticTone() {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
-      const durations = [0.8, 0.8, 0.8, 1.2, 0.8, 0.8];
-      let time = audioCtx.currentTime;
-
-      function playSequence() {
-        notes.forEach((freq, i) => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0, time);
-          gain.gain.linearRampToValueAtTime(0.08, time + 0.1);
-          gain.gain.linearRampToValueAtTime(0, time + durations[i] - 0.1);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(time);
-          osc.stop(time + durations[i]);
-          time += durations[i];
-        });
-
-        const totalDuration = durations.reduce((a, b) => a + b, 0) * 1000;
-        if (playing) {
-          setTimeout(() => {
-            if (playing) {
-              time = audioCtx.currentTime;
-              playSequence();
-            }
-          }, totalDuration);
-        }
-      }
-
-      playSequence();
-    }
 
     document.getElementById('musicBtn').addEventListener('click', (e) => {
       e.stopPropagation();
       playing = !playing;
       if (playing) {
-        playRomanticTone();
+        audio.play();
         document.getElementById('musicBtn').textContent = '\uD83D\uDD0A';
       } else {
-        if (audioCtx) audioCtx.close();
-        audioCtx = null;
+        audio.pause();
         document.getElementById('musicBtn').textContent = '\uD83C\uDFB5';
       }
     });
